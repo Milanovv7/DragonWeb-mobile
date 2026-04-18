@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DragonWeb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ── Variables (dark) ── */
+:root {
+  --glass-bg:     rgba(255,255,255,0.11);
+  --glass-border: rgba(255,255,255,0.22);
+  --glass-hi:     inset 0 1px 0 rgba(255,255,255,0.18);
+  --glass-shadow: 0 12px 48px rgba(0,0,0,0.38);
+  --text-1: rgba(255,255,255,0.95);
+  --text-2: rgba(255,255,255,0.55);
+  --text-3: rgba(255,255,255,0.30);
+  --input-bg: rgba(255,255,255,0.10);
+  --input-focus: rgba(255,255,255,0.18);
+  --accent: #ff7a2f;
+  --accent-soft: rgba(255,122,47,0.15);
+  --card-bg: rgba(255,255,255,0.07);
+  --card-border: rgba(255,255,255,0.10);
+  --panel-bg: rgba(18,18,24,0.92);
+  --panel-border: rgba(255,255,255,0.09);
+  --icon-dim: rgba(255,255,255,0.50);
+  --danger: #ff4f4f;
+  --mic-active: rgba(255,122,47,0.22);
+}
+/* ── Variables (light) ── */
+[data-theme="light"] {
+  --glass-bg:     rgba(255,255,255,0.58);
+  --glass-border: rgba(0,0,0,0.10);
+  --glass-hi:     inset 0 1px 0 rgba(255,255,255,0.80);
+  --glass-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  --text-1: rgba(0,0,0,0.88);
+  --text-2: rgba(0,0,0,0.50);
+  --text-3: rgba(0,0,0,0.30);
+  --input-bg: rgba(0,0,0,0.055);
+  --input-focus: rgba(0,0,0,0.09);
+  --card-bg: rgba(0,0,0,0.04);
+  --card-border: rgba(0,0,0,0.08);
+  --panel-bg: rgba(246,246,250,0.97);
+  --panel-border: rgba(0,0,0,0.08);
+  --icon-dim: rgba(0,0,0,0.42);
+  --mic-active: rgba(255,122,47,0.12);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:‘DM Sans’,sans-serif;-webkit-tap-highlight-color:transparent}
+
+/* ── Wallpaper (dark) ── */
+#bg{position:fixed;inset:0;z-index:0;transition:background 0.65s ease}
+.wp-0{background:linear-gradient(160deg,#0d0d14 0%,#111220 45%,#0a0d1c 100%)}
+.wp-1{background:radial-gradient(ellipse at 28% 72%,#0c2030 0%,#050d1e 50%,#090516 100%)}
+.wp-2{background:linear-gradient(155deg,#1a0a08 0%,#0e0617 45%,#060a1c 100%)}
+.wp-3{background:linear-gradient(150deg,#040f0a 0%,#061910 45%,#030f08 100%)}
+.wp-4{background:radial-gradient(ellipse at 70% 30%,#1a0d06 0%,#0d0615 50%,#050820 100%)}
+.wp-5{background:linear-gradient(145deg,#0e0618 0%,#050a22 45%,#040d18 100%)}
+
+/* ── Wallpaper (light overrides) ── */
+[data-theme=“light”] #bg.wp-0{background:linear-gradient(160deg,#f8f9ff 0%,#eef1fa 45%,#f2f4fc 100%)}
+[data-theme=“light”] #bg.wp-1{background:radial-gradient(ellipse at 28% 72%,#dceeff 0%,#e8f3ff 50%,#f0eaff 100%)}
+[data-theme=“light”] #bg.wp-2{background:linear-gradient(155deg,#fff4ee 0%,#fde8e2 45%,#fff0f5 100%)}
+[data-theme=“light”] #bg.wp-3{background:linear-gradient(150deg,#edfbf4 0%,#e0f5eb 45%,#ebfaf1 100%)}
+[data-theme=“light”] #bg.wp-4{background:radial-gradient(ellipse at 70% 30%,#fff3e8 0%,#fde8d8 50%,#eeeaff 100%)}
+[data-theme=“light”] #bg.wp-5{background:linear-gradient(145deg,#f5eeff 0%,#e8eaff 45%,#eaf3ff 100%)}
+
+/* ── App ── */
+#app{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column}
+
+/* ── Top bar ── */
+#top-bar{display:none;padding:52px 16px 10px;position:relative;z-index:20}
+body.topbar #top-bar{display:block}
+.top-inner{
+background:var(–glass-bg);
+backdrop-filter:blur(52px) saturate(1.9);-webkit-backdrop-filter:blur(52px) saturate(1.9);
+border:1px solid var(–glass-border);border-radius:20px;
+padding:10px 14px;box-shadow:var(–glass-shadow),var(–glass-hi);
+}
+
+/* ── Content ── */
+#content{flex:1;overflow:hidden;position:relative}
+
+/* ── Home ── */
+#home{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:160px}
+#home::-webkit-scrollbar{display:none}
+.hero{padding:64px 26px 32px}
+.wordmark{font-size:46px;font-weight:600;letter-spacing:-2px;color:var(–text-1);line-height:1;margin-bottom:5px}
+.sub{font-size:15px;font-weight:300;color:var(–text-2)}
+.home-search{padding:0 18px 28px;display:none}
+body:not(.topbar) .home-search{display:block}
+
+/* ── Bookmarks ── */
+#bm-sec{display:none;padding:0 18px;animation:fadeUp .28s ease both}
+#bm-sec.show{display:block}
+.sec-lbl{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(–text-3);margin-bottom:13px}
+.bm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.bm-card{
+background:var(–card-bg);border:1px solid var(–card-border);border-radius:17px;
+padding:13px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;
+backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+transition:transform .15s,background .15s;user-select:none;-webkit-user-select:none;
+}
+.bm-card:active{transform:scale(.94);background:var(–input-focus)}
+.bm-fav{width:34px;height:34px;border-radius:9px;flex-shrink:0;overflow:hidden;background:var(–card-border);display:flex;align-items:center;justify-content:center}
+.bm-fav img{width:100%;height:100%;object-fit:cover}
+.bm-info{min-width:0;flex:1}
+.bm-name{font-size:13px;font-weight:500;color:var(–text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bm-host{font-size:11px;color:var(–text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.bm-empty{grid-column:1/-1;text-align:center;padding:32px 12px;color:var(–text-3);font-size:13px;font-weight:300;line-height:1.9}
+
+/* ── Page View ── */
+#page-view{
+position:absolute;inset:0;display:none;
+flex-direction:column;align-items:center;justify-content:center;
+padding:32px 28px;animation:fadeIn .25s ease;
+}
+#page-view.show{display:flex}
+.pv-fav{
+width:68px;height:68px;border-radius:18px;overflow:hidden;
+background:var(–card-bg);border:1px solid var(–card-border);
+display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+}
+.pv-fav img{width:100%;height:100%;object-fit:cover}
+.pv-domain{font-size:22px;font-weight:500;color:var(–text-1);letter-spacing:-.3px;margin-bottom:5px;text-align:center}
+.pv-url{font-size:12.5px;color:var(–text-3);text-align:center;word-break:break-all;max-width:260px;line-height:1.55;margin-bottom:22px}
+.pv-card{
+background:var(–glass-bg);border:1px solid var(–glass-border);border-radius:17px;
+padding:14px 18px;font-size:13px;color:var(–text-2);text-align:center;line-height:1.65;
+backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);max-width:290px;margin-bottom:16px;
+}
+.pv-actions{display:flex;flex-direction:column;gap:9px;width:100%;max-width:290px}
+.pv-btn{
+background:var(–accent);color:#fff;border:none;border-radius:14px;
+padding:13px 0;font-family:‘DM Sans’,sans-serif;font-size:15px;font-weight:500;cursor:pointer;width:100%;
+transition:opacity .15s,transform .15s;
+}
+.pv-btn:active{opacity:.8;transform:scale(.97)}
+.pv-frame-btn{
+background:var(–glass-bg);color:var(–text-1);
+border:1px solid var(–glass-border);border-radius:14px;
+padding:13px 0;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:400;cursor:pointer;width:100%;
+backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+transition:background .15s,transform .15s;
+}
+.pv-frame-btn:active{background:var(–input-focus);transform:scale(.97)}
+
+/* ── Inline Frame Overlay ── */
+#frame-overlay{
+position:fixed;inset:0;z-index:80;
+display:none;flex-direction:column;
+background:#000;
+animation:fadeIn .2s ease;
+}
+#frame-overlay.open{display:flex}
+#frame-toolbar{
+background:var(–glass-bg);
+backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);
+border-bottom:1px solid var(–glass-border);
+padding:52px 16px 12px;
+display:flex;align-items:center;gap:10px;
+flex-shrink:0;
+}
+#frame-toolbar .url-field{flex:1}
+#frame-close-btn{
+background:none;border:none;cursor:pointer;color:var(–text-2);
+padding:8px;border-radius:11px;display:flex;flex-shrink:0;
+}
+#frame-close-btn:active{color:var(–text-1);background:var(–card-bg)}
+#frame-iframe{flex:1;border:none;width:100%;background:#fff}
+#frame-blocked{
+display:none;position:absolute;inset:0;top:96px;
+flex-direction:column;align-items:center;justify-content:center;
+gap:14px;padding:40px;text-align:center;
+background:var(–panel-bg);
+}
+#frame-blocked.show{display:flex}
+.fb-title{font-size:18px;font-weight:500;color:var(–text-1);letter-spacing:-.2px}
+.fb-msg{font-size:13.5px;color:var(–text-2);line-height:1.65;max-width:270px}
+
+/* ── URL field ── */
+.url-field{
+display:flex;align-items:center;gap:10px;
+background:var(–input-bg);border:1px solid rgba(255,255,255,0.08);
+border-radius:14px;padding:11px 14px;transition:background .2s,border-color .2s;
+}
+[data-theme=“light”] .url-field{border-color:rgba(0,0,0,0.07)}
+.url-field:focus-within{background:var(–input-focus);border-color:rgba(255,255,255,0.16)}
+[data-theme=“light”] .url-field:focus-within{border-color:rgba(0,0,0,0.14)}
+.uico{color:var(–text-3);flex-shrink:0;display:flex}
+.uin{flex:1;background:none;border:none;outline:none;font-family:‘DM Sans’,sans-serif;font-size:15px;font-weight:400;color:var(–text-1);min-width:0}
+.uin::placeholder{color:var(–text-3)}
+/* Mic button */
+.mic{
+background:none;border:none;cursor:pointer;color:var(–text-3);padding:0;display:flex;flex-shrink:0;
+border-radius:8px;transition:color .18s,background .18s;
+}
+.mic:active{color:var(–accent)}
+.mic.listening{color:var(–accent);background:var(–mic-active);padding:4px;margin:-4px;animation:micPulse 1s ease-in-out infinite}
+@keyframes micPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── Floating bar ── */
+#bar-wrap{
+position:fixed;bottom:0;left:0;right:0;z-index:20;
+padding:0 14px calc(18px + env(safe-area-inset-bottom));pointer-events:none;
+}
+#bar{
+pointer-events:all;
+background:var(–glass-bg);
+backdrop-filter:blur(52px) saturate(1.9);-webkit-backdrop-filter:blur(52px) saturate(1.9);
+border:1px solid var(–glass-border);border-radius:26px;
+box-shadow:var(–glass-shadow),var(–glass-hi);padding:12px 14px;
+display:flex;flex-direction:column;gap:9px;
+}
+body.topbar #bar .bar-url{display:none}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+.nb{
+background:none;border:none;cursor:pointer;color:var(–icon-dim);
+padding:8px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+transition:color .13s,background .13s;position:relative;
+}
+.nb:active{background:rgba(255,255,255,0.09);color:var(–text-1);transform:scale(.84)}
+[data-theme=“light”] .nb:active{background:rgba(0,0,0,0.07)}
+.nb:disabled{opacity:.18;pointer-events:none}
+.nb.lit{color:var(–text-1)}
+.tc{
+position:absolute;top:2px;right:2px;
+background:var(–text-1);color:var(–panel-bg);
+font-size:8px;font-weight:700;min-width:14px;height:14px;
+border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;
+}
+
+/* ── Panels ── */
+.overlay{position:fixed;inset:0;z-index:50;display:none}
+.overlay.open{display:flex;align-items:flex-end}
+.ov-bg{position:absolute;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.panel{
+position:relative;z-index:1;width:100%;max-height:88vh;
+background:var(–panel-bg);
+backdrop-filter:blur(60px) saturate(2.2);-webkit-backdrop-filter:blur(60px) saturate(2.2);
+border:1px solid var(–panel-border);border-radius:28px 28px 0 0;
+overflow-y:auto;scrollbar-width:none;
+animation:slideUp .3s cubic-bezier(.3,.75,0,1);
+padding-bottom:calc(28px + env(safe-area-inset-bottom));
+}
+.panel::-webkit-scrollbar{display:none}
+@keyframes slideUp{from{transform:translateY(100%);opacity:.6}to{transform:translateY(0);opacity:1}}
+.handle{width:36px;height:4px;border-radius:2px;background:var(–text-3);margin:13px auto 0}
+.ph{display:flex;align-items:center;padding:14px 22px 16px;border-bottom:1px solid var(–panel-border)}
+.pt{font-size:17px;font-weight:500;color:var(–text-1);flex:1;letter-spacing:-.2px}
+.px{background:none;border:none;cursor:pointer;color:var(–text-2);padding:5px;border-radius:9px;display:flex}
+.px:active{color:var(–text-1)}
+
+/* Settings */
+.ss{padding:20px 22px;border-bottom:1px solid var(–panel-border)}
+.ss:last-child{border-bottom:none}
+.sl{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(–text-3);margin-bottom:13px}
+.chips{display:flex;gap:8px}
+.chip{
+flex:1;padding:12px 6px;border-radius:14px;cursor:pointer;
+background:var(–card-bg);border:1.5px solid var(–card-border);
+color:var(–text-2);font-family:‘DM Sans’,sans-serif;font-size:12.5px;font-weight:500;
+display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;transition:all .18s;
+}
+.chip.on{border-color:var(–accent);background:var(–accent-soft);color:var(–accent)}
+.wp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wp-th{
+aspect-ratio:9/16;border-radius:14px;cursor:pointer;
+border:2.5px solid transparent;transition:all .2s;position:relative;overflow:hidden;
+}
+.wp-th.on{border-color:var(–accent);box-shadow:0 0 0 2px var(–accent-soft)}
+.wp-name{position:absolute;bottom:7px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:rgba(255,255,255,.82);text-shadow:0 1px 6px rgba(0,0,0,.6)}
+/* Light-mode wallpaper thumbnails */
+[data-theme=“light”] .wp-th .wp-name{color:rgba(0,0,0,0.55);text-shadow:none}
+[data-theme=“light”] .wp-th.wp-0{background:linear-gradient(160deg,#f8f9ff,#eef1fa)}
+[data-theme=“light”] .wp-th.wp-1{background:radial-gradient(ellipse at 28% 72%,#dceeff,#f0eaff)}
+[data-theme=“light”] .wp-th.wp-2{background:linear-gradient(155deg,#fff4ee,#fff0f5)}
+[data-theme=“light”] .wp-th.wp-3{background:linear-gradient(150deg,#edfbf4,#ebfaf1)}
+[data-theme=“light”] .wp-th.wp-4{background:radial-gradient(ellipse at 70% 30%,#fff3e8,#eeeaff)}
+[data-theme=“light”] .wp-th.wp-5{background:linear-gradient(145deg,#f5eeff,#eaf3ff)}
+
+/* Tabs */
+.tab-list{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tab-item{
+display:flex;align-items:center;gap:11px;padding:12px 13px;
+background:var(–card-bg);border:1px solid var(–card-border);border-radius:17px;cursor:pointer;transition:background .15s;
+}
+.tab-item.cur{border-color:var(–accent);background:var(–accent-soft)}
+.tf{width:32px;height:32px;border-radius:8px;overflow:hidden;background:var(–card-border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.tf img{width:100%;height:100%;object-fit:cover}
+.ti{flex:1;min-width:0}
+.tt{font-size:14px;font-weight:500;color:var(–text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tu{font-size:11px;color:var(–text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tx{background:none;border:none;color:var(–text-3);cursor:pointer;padding:5px;border-radius:8px;display:flex;flex-shrink:0}
+.tx:active{color:var(–danger)}
+.newtab{background:var(–accent);color:#fff;border:none;border-radius:12px;padding:8px 17px;font-family:‘DM Sans’,sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+
+/* ── Context Menu ── */
+#ctx{
+position:fixed;z-index:200;display:none;
+background:var(–panel-bg);backdrop-filter:blur(52px);-webkit-backdrop-filter:blur(52px);
+border:1px solid var(–panel-border);border-radius:17px;overflow:hidden;
+box-shadow:0 20px 60px rgba(0,0,0,.55);min-width:196px;animation:popIn .13s ease-out;
+}
+#ctx.open{display:block}
+@keyframes popIn{from{transform:scale(.84);opacity:0}to{transform:scale(1);opacity:1}}
+.ci{
+display:flex;align-items:center;gap:12px;padding:14px 17px;cursor:pointer;
+font-size:15px;font-weight:400;color:var(–text-1);
+transition:background .12s;border-bottom:1px solid var(–panel-border);
+}
+.ci:last-child{border-bottom:none}
+.ci:active{background:var(–card-bg)}
+.ci.red{color:var(–danger)}
+
+/* ── Dialog ── */
+#dlg-ov{
+position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);
+display:none;align-items:center;justify-content:center;padding:28px;
+backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+#dlg-ov.open{display:flex}
+#dlg{background:var(–panel-bg);border:1px solid var(–panel-border);border-radius:24px;padding:26px;width:100%;max-width:320px;animation:popIn .18s ease-out}
+.dt{font-size:17px;font-weight:500;color:var(–text-1);margin-bottom:18px;letter-spacing:-.2px}
+.di{
+width:100%;background:var(–input-bg);border:1px solid var(–card-border);border-radius:13px;
+padding:14px 16px;color:var(–text-1);font-family:‘DM Sans’,sans-serif;font-size:15px;
+outline:none;transition:border-color .2s;margin-bottom:16px;
+}
+.di:focus{border-color:var(–accent)}
+.da{display:flex;gap:10px}
+.db{flex:1;padding:14px;border:none;border-radius:13px;font-family:‘DM Sans’,sans-serif;font-size:15px;font-weight:500;cursor:pointer}
+.db.can{background:var(–card-bg);color:var(–text-2);border:1px solid var(–card-border)}
+.db.ok{background:var(–accent);color:#fff}
+
+/* ── Toast ── */
+#toast{
+position:fixed;bottom:145px;left:50%;transform:translateX(-50%) translateY(8px);
+background:var(–panel-bg);border:1px solid var(–panel-border);border-radius:13px;
+padding:10px 22px;font-size:13px;color:var(–text-1);z-index:400;
+opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;
+backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+
+</head>
+<body>
+<div id="bg" class="wp-0"></div>
+<div id="app">
+
+  <!-- TOP BAR (topbar mode) -->
+
+  <div id="top-bar">
+    <div class="top-inner">
+      <div class="url-field">
+        <span class="uico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.2-4.2"/></svg></span>
+        <input id="in-top" class="uin" type="url" placeholder="Search or enter website name" inputmode="url" autocomplete="off" spellcheck="false">
+        <button class="mic" data-target="in-top" aria-label="Voice search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+
+  <div id="content">
+
+```
+<!-- HOME -->
+<div id="home">
+  <div class="hero">
+    <div class="wordmark">DragonWeb</div>
+    <div class="sub" id="greeting"></div>
+  </div>
+  <div class="home-search">
+    <div class="url-field">
+      <span class="uico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.2-4.2"/></svg></span>
+      <input id="in-home" class="uin" type="text" placeholder="Search or enter website name" autocomplete="off" spellcheck="false">
+      <button class="mic" data-target="in-home" aria-label="Voice search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="bm-sec">
+    <div style="padding:0 18px">
+      <div class="sec-lbl">Bookmarks</div>
+      <div class="bm-grid" id="bm-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE VIEW -->
+<div id="page-view">
+  <div class="pv-fav" id="pv-fav">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--text-3)"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10z"/></svg>
+  </div>
+  <div class="pv-domain" id="pv-domain">—</div>
+  <div class="pv-url" id="pv-url"></div>
+  <div class="pv-card">Sites open in your default browser.<br>DragonWeb keeps your bookmarks and history.</div>
+  <div class="pv-actions">
+    <button class="pv-btn" id="pv-btn">Open Site</button>
+    <button class="pv-frame-btn" id="pv-frame-btn">Display in X-Frame Options</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- FLOATING BAR -->
+
+  <div id="bar-wrap">
+    <div id="bar">
+      <div class="bar-url url-field">
+        <span class="uico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.2-4.2"/></svg></span>
+        <input id="in-bar" class="uin" type="url" placeholder="Search or enter website name" inputmode="url" autocomplete="off" spellcheck="false">
+        <button class="mic" data-target="in-bar" aria-label="Voice search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+      </div>
+      <div class="nav-row">
+        <button class="nb" id="btn-back" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="nb" id="btn-fwd" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="nb" id="btn-share">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        </button>
+        <button class="nb" id="btn-bm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nb" id="btn-tabs">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2.5"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          <span class="tc" id="tc">1</span>
+        </button>
+        <button class="nb" id="btn-settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- INLINE FRAME OVERLAY -->
+
+<div id="frame-overlay">
+  <div id="frame-toolbar">
+    <button id="frame-close-btn" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="url-field">
+      <span class="uico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.2-4.2"/></svg></span>
+      <span id="frame-url-label" style="flex:1;font-size:13px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    </div>
+    <button id="frame-ext-btn" style="background:none;border:none;cursor:pointer;color:var(--text-2);padding:8px;border-radius:11px;display:flex;flex-shrink:0" title="Open externally">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </button>
+  </div>
+  <iframe id="frame-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+  <div id="frame-blocked">
+    <div class="fb-title">Blocked by site</div>
+    <div class="fb-msg">This site's security policy prevents inline display (X-Frame-Options). Try opening it directly instead.</div>
+    <button class="pv-btn" id="frame-blocked-open" style="margin-top:18px;width:auto;padding:12px 28px">Open in Browser</button>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+
+<div class="overlay" id="ov-settings">
+  <div class="ov-bg" id="ov-s-bg"></div>
+  <div class="panel">
+    <div class="handle"></div>
+    <div class="ph">
+      <span class="pt">Settings</span>
+      <button class="px" id="px-s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <!-- Appearance -->
+    <div class="ss">
+      <div class="sl">Appearance</div>
+      <div class="chips">
+        <button class="chip" data-theme="system" onclick="setTheme('system',this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>System
+        </button>
+        <button class="chip" data-theme="dark" onclick="setTheme('dark',this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark
+        </button>
+        <button class="chip" data-theme="light" onclick="setTheme('light',this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light
+        </button>
+      </div>
+    </div>
+    <!-- Search bar position -->
+    <div class="ss">
+      <div class="sl">Search Bar</div>
+      <div class="chips">
+        <button class="chip" data-pos="bottom" onclick="setPos('bottom',this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 19 19 12"/></svg>Bottom
+        </button>
+        <button class="chip" data-pos="top" onclick="setPos('top',this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/></svg>Top
+        </button>
+      </div>
+    </div>
+    <!-- Wallpaper -->
+    <div class="ss">
+      <div class="sl">Wallpaper</div>
+      <div class="wp-grid">
+        <div class="wp-th wp-0" data-wp="0" onclick="setWP(0,this)"><div class="wp-name">Abyss</div></div>
+        <div class="wp-th wp-1" data-wp="1" onclick="setWP(1,this)"><div class="wp-name">Ocean</div></div>
+        <div class="wp-th wp-2" data-wp="2" onclick="setWP(2,this)"><div class="wp-name">Ember</div></div>
+        <div class="wp-th wp-3" data-wp="3" onclick="setWP(3,this)"><div class="wp-name">Forest</div></div>
+        <div class="wp-th wp-4" data-wp="4" onclick="setWP(4,this)"><div class="wp-name">Nebula</div></div>
+        <div class="wp-th wp-5" data-wp="5" onclick="setWP(5,this)"><div class="wp-name">Galaxy</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS PANEL -->
+
+<div class="overlay" id="ov-tabs">
+  <div class="ov-bg" id="ov-t-bg"></div>
+  <div class="panel">
+    <div class="handle"></div>
+    <div class="ph">
+      <span class="pt">Tabs</span>
+      <button class="newtab" onclick="newTab()">+ New Tab</button>
+    </div>
+    <div class="tab-list" id="tab-list"></div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+
+<div id="ctx">
+  <div class="ci" id="ci-rename">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    Rename
+  </div>
+  <div class="ci red" id="ci-delete">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    Delete
+  </div>
+</div>
+
+<!-- DIALOG -->
+
+<div id="dlg-ov">
+  <div id="dlg">
+    <div class="dt" id="dt">Rename Bookmark</div>
+    <input class="di" id="di" type="text" placeholder="Name">
+    <div class="da">
+      <button class="db can" onclick="closeDlg()">Cancel</button>
+      <button class="db ok" onclick="okDlg()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══ STATE ══════════════════════════════════════ */
+const S={
+  theme: ls('dw:theme')||'system',
+  wp:    +(ls('dw:wp')||0),
+  pos:   ls('dw:pos')||'bottom',
+  tabs:  lsj('dw:tabs')||[{id:1,url:'',title:'New Tab',home:true}],
+  aid:   +(ls('dw:aid')||1),
+  bm:    lsj('dw:bm')||[],
+  nid:   +(ls('dw:nid')||2),
+  bmOpen:false, ctxId:null, dlgCb:null, frameUrl:''
+};
+function ls(k){return localStorage.getItem(k)}
+function lsj(k){try{return JSON.parse(ls(k))}catch{return null}}
+function save(){
+  localStorage.setItem('dw:tabs',JSON.stringify(S.tabs));
+  localStorage.setItem('dw:aid',S.aid);
+  localStorage.setItem('dw:nid',S.nid);
+  document.getElementById('tc').textContent=S.tabs.length;
+}
+
+/* ══ INIT ══════════════════════════════════════ */
+function init(){
+  applyTheme(S.theme); applyWP(S.wp); applyPos(S.pos);
+  greeting(); renderBM(); renderTabs(); syncBar(); updateNav();
+  csync('[data-theme]',e=>e.dataset.theme===S.theme);
+  csync('[data-pos]',e=>e.dataset.pos===S.pos);
+  csync('[data-wp]',e=>+e.dataset.wp===S.wp);
+  document.getElementById('tc').textContent=S.tabs.length;
+}
+
+/* ══ THEME ════════════════════════════════════ */
+function applyTheme(t){
+  const dark=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);
+  document.documentElement.dataset.theme=dark?'dark':'light';
+}
+function setTheme(t,el){S.theme=t;localStorage.setItem('dw:theme',t);applyTheme(t);csync('[data-theme]',e=>e.dataset.theme===t)}
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(S.theme==='system')applyTheme('system')});
+
+/* ══ WALLPAPER ════════════════════════════════ */
+function applyWP(i){document.getElementById('bg').className='wp-'+i}
+function setWP(i,el){S.wp=i;localStorage.setItem('dw:wp',i);applyWP(i);csync('[data-wp]',e=>+e.dataset.wp===i)}
+
+/* ══ POSITION ═════════════════════════════════ */
+function applyPos(p){document.body.classList.toggle('topbar',p==='top')}
+function setPos(p,el){S.pos=p;localStorage.setItem('dw:pos',p);applyPos(p);csync('[data-pos]',e=>e.dataset.pos===p)}
+
+function csync(sel,test){document.querySelectorAll(sel).forEach(e=>e.classList.toggle('on',test(e)))}
+
+/* ══ GREETING ═════════════════════════════════ */
+function greeting(){
+  const h=new Date().getHours();
+  document.getElementById('greeting').textContent=
+    h<5?'Night owl mode.':h<12?'Good morning.':h<17?'Good afternoon.':h<21?'Good evening.':'Good night.';
+}
+
+/* ══ VOICE / MIC ══════════════════════════════ */
+let activeMicBtn=null, recognition=null;
+
+function startVoice(btn, targetId){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    // Fallback: focus input so system keyboard voice appears
+    const el=document.getElementById(targetId);
+    if(el){el.focus();el.setAttribute('inputmode','text')}
+    toast('Tap the mic key on your keyboard');
+    return;
+  }
+  // Stop existing session
+  if(recognition){try{recognition.stop()}catch(e){};recognition=null}
+  if(activeMicBtn){activeMicBtn.classList.remove('listening');activeMicBtn=null}
+
+  recognition=new SR();
+  recognition.lang='en-US';recognition.interimResults=false;recognition.maxAlternatives=1;
+  activeMicBtn=btn; btn.classList.add('listening');
+  toast('Listening…');
+
+  recognition.onresult=e=>{
+    const transcript=e.results[0][0].transcript;
+    const el=document.getElementById(targetId);
+    if(el){el.value=transcript;el.focus()}
+    btn.classList.remove('listening');activeMicBtn=null;recognition=null;
+    toast('Got it — press Enter to go');
+  };
+  recognition.onerror=err=>{
+    btn.classList.remove('listening');activeMicBtn=null;recognition=null;
+    if(err.error==='not-allowed') toast('Microphone access denied');
+    else toast('Voice error — try again');
+  };
+  recognition.onend=()=>{
+    btn.classList.remove('listening');activeMicBtn=null;recognition=null;
+  };
+  try{recognition.start()}catch(e){
+    btn.classList.remove('listening');activeMicBtn=null;recognition=null;toast('Could not start voice');
+  }
+}
+
+// Bind all mic buttons
+document.querySelectorAll('.mic[data-target]').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    e.preventDefault();
+    startVoice(btn, btn.dataset.target);
+  });
+});
+
+/* ══ TABS ═════════════════════════════════════ */
+function tab(){return S.tabs.find(t=>t.id===S.aid)||S.tabs[0]}
+function newTab(){
+  const id=S.nid++;S.tabs.push({id,url:'',title:'New Tab',home:true});S.aid=id;save();
+  closeOv('ov-tabs');goHome();syncBar();updateNav();renderTabs();
+}
+function switchTab(id){
+  S.aid=id;save();closeOv('ov-tabs');
+  const t=tab();if(t.home)goHome();else showPage(t.url,t.title,false);
+  syncBar();updateNav();
+}
+function closeTab(id,ev){
+  ev.stopPropagation();
+  if(S.tabs.length===1){Object.assign(S.tabs[0],{url:'',title:'New Tab',home:true});S.aid=S.tabs[0].id;save();goHome();syncBar();renderTabs();return}
+  const i=S.tabs.findIndex(t=>t.id===id);S.tabs.splice(i,1);
+  if(S.aid===id){S.aid=S.tabs[Math.max(0,i-1)].id;const t=tab();if(t.home)goHome();else showPage(t.url,t.title,false);syncBar()}
+  save();renderTabs();
+}
+function renderTabs(){
+  document.getElementById('tab-list').innerHTML=S.tabs.map(t=>`
+    <div class="tab-item${t.id===S.aid?' cur':''}" onclick="switchTab(${t.id})">
+      <div class="tf">${fav(t.url,32)}</div>
+      <div class="ti"><div class="tt">${esc(t.title)}</div><div class="tu">${t.home?'Home':esc(t.url)}</div></div>
+      <button class="tx" onclick="closeTab(${t.id},event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>`).join('');
+}
+
+/* ══ NAVIGATION ═══════════════════════════════ */
+function norm(raw){
+  const s=raw.trim();if(!s)return'';
+  if(s.includes(' ')||!s.includes('.'))return'https://www.google.com/search?q='+encodeURIComponent(s);
+  if(!/^https?:\/\//i.test(s))return'https://'+s;
+  return s;
+}
+function navigate(raw){
+  const url=norm(raw);if(!url)return;
+  let title='';try{title=new URL(url).hostname.replace(/^www\./,'')}catch{title=url}
+  const t=tab();t.url=url;t.home=false;t.title=title;save();
+  showPage(url,title,true);syncBar();updateNav();renderTabs();
+}
+function showPage(url,title,openNow){
+  document.getElementById('home').style.display='none';
+  const pv=document.getElementById('page-view');pv.classList.add('show');
+  document.getElementById('pv-domain').textContent=safeHost(url);
+  document.getElementById('pv-url').textContent=url;
+  document.getElementById('pv-fav').innerHTML=fav(url,68,'large');
+  S.frameUrl=url;
+  document.getElementById('pv-btn').onclick=()=>window.open(url,'_blank');
+  document.getElementById('pv-frame-btn').onclick=()=>openFrame(url);
+  if(openNow)window.open(url,'_blank');
+}
+function goHome(){
+  document.getElementById('page-view').classList.remove('show');
+  document.getElementById('home').style.display='block';
+}
+function syncBar(){
+  const t=tab();const v=t.home?'':t.url;
+  ['in-bar','in-top','in-home'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=v});
+}
+function updateNav(){
+  const t=tab();
+  document.getElementById('btn-back').disabled=t.home;
+  document.getElementById('btn-fwd').disabled=true;
+}
+
+/* ══ URL INPUT EVENTS ═════════════════════════ */
+['in-bar','in-top','in-home'].forEach(id=>{
+  const el=document.getElementById(id);if(!el)return;
+  el.addEventListener('focus',()=>setTimeout(()=>el.select(),10));
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'){navigate(el.value);el.blur()}});
+});
+
+/* ══ INLINE FRAME ═════════════════════════════ */
+function openFrame(url){
+  const ov=document.getElementById('frame-overlay');
+  const fr=document.getElementById('frame-iframe');
+  const blocked=document.getElementById('frame-blocked');
+  document.getElementById('frame-url-label').textContent=safeHost(url);
+  document.getElementById('frame-blocked-open').onclick=()=>window.open(url,'_blank');
+  document.getElementById('frame-ext-btn').onclick=()=>window.open(url,'_blank');
+  blocked.classList.remove('show');
+  fr.style.display='block';
+  fr.src=url;
+  // Detect block: if content is inaccessible after load, X-Frame-Options likely blocked it
+  fr.onload=()=>{
+    try{
+      // If we can access contentDocument it likely loaded (rare for cross-origin)
+      const doc=fr.contentDocument;
+      if(!doc||!doc.body||doc.body.innerHTML==='')throw new Error('blocked');
+    }catch(e){
+      // Cross-origin or blocked — show the blocked notice
+      blocked.classList.add('show');
+      fr.style.display='none';
+    }
+  };
+  fr.onerror=()=>{blocked.classList.add('show');fr.style.display='none'};
+  ov.classList.add('open');
+}
+document.getElementById('frame-close-btn').addEventListener('click',()=>{
+  document.getElementById('frame-overlay').classList.remove('open');
+  const fr=document.getElementById('frame-iframe');
+  fr.src='about:blank';
+  document.getElementById('frame-blocked').classList.remove('show');
+  fr.style.display='block';
+});
+
+/* ══ BUTTONS ══════════════════════════════════ */
+document.getElementById('btn-back').addEventListener('click',()=>{
+  const t=tab();t.home=true;t.url='';t.title='New Tab';save();goHome();syncBar();updateNav();renderTabs();
+});
+document.getElementById('btn-fwd').addEventListener('click',()=>{});
+document.getElementById('btn-share').addEventListener('click',()=>{
+  const t=tab();if(!t.url){toast('Nothing to share');return}
+  if(navigator.share)navigator.share({title:t.title,url:t.url}).catch(()=>{});
+  else navigator.clipboard.writeText(t.url).then(()=>toast('Link copied')).catch(()=>toast('Copy from address bar'));
+});
+document.getElementById('btn-bm').addEventListener('click',()=>{
+  const t=tab();
+  if(!t.home&&t.url){
+    if(!S.bm.find(b=>b.url===t.url)){
+      S.bm.push({id:Date.now(),url:t.url,title:t.title||safeHost(t.url)});
+      localStorage.setItem('dw:bm',JSON.stringify(S.bm));renderBM();toast('Bookmark saved');
+    }
+    t.home=true;t.url='';save();goHome();syncBar();updateNav();renderTabs();
+  }
+  S.bmOpen=!S.bmOpen;
+  document.getElementById('bm-sec').classList.toggle('show',S.bmOpen);
+  document.getElementById('btn-bm').classList.toggle('lit',S.bmOpen);
+  if(S.bmOpen)setTimeout(()=>document.getElementById('bm-sec').scrollIntoView({behavior:'smooth'}),60);
+});
+document.getElementById('btn-tabs').addEventListener('click',()=>{renderTabs();openOv('ov-tabs')});
+document.getElementById('btn-settings').addEventListener('click',()=>openOv('ov-settings'));
+['ov-s-bg','px-s'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>closeOv('ov-settings')));
+document.getElementById('ov-t-bg').addEventListener('click',()=>closeOv('ov-tabs'));
+
+/* ══ BOOKMARKS ════════════════════════════════ */
+function renderBM(){
+  const g=document.getElementById('bm-grid');
+  if(!S.bm.length){g.innerHTML='<div class="bm-empty">No bookmarks yet.<br>Visit a page, then tap the bookmark icon.</div>';return}
+  g.innerHTML=S.bm.map(b=>`
+    <div class="bm-card" data-id="${b.id}" onclick="navigate('${esc(b.url)}')">
+      <div class="bm-fav">${fav(b.url,34)}</div>
+      <div class="bm-info"><div class="bm-name">${esc(b.title)}</div><div class="bm-host">${esc(safeHost(b.url))}</div></div>
+    </div>`).join('');
+  g.querySelectorAll('.bm-card').forEach(card=>{
+    let pt=null;
+    card.addEventListener('touchstart',e=>{pt=setTimeout(()=>{pt=null;showCtx(e,+card.dataset.id)},500)},{passive:true});
+    card.addEventListener('touchend',()=>{if(pt){clearTimeout(pt);pt=null}});
+    card.addEventListener('touchmove',()=>{if(pt){clearTimeout(pt);pt=null}});
+    card.addEventListener('contextmenu',e=>{e.preventDefault();showCtx(e,+card.dataset.id)});
+  });
+}
+
+/* ══ CONTEXT MENU ═════════════════════════════ */
+function showCtx(e,id){
+  S.ctxId=id;const m=document.getElementById('ctx');m.classList.add('open');
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  m.style.left=Math.min(cx,innerWidth-210)+'px';
+  m.style.top=Math.max(10,Math.min(cy,innerHeight-120))+'px';
+}
+function hideCtx(){document.getElementById('ctx').classList.remove('open');S.ctxId=null}
+document.getElementById('ci-rename').addEventListener('click',()=>{
+  const b=S.bm.find(x=>x.id===S.ctxId);if(!b)return;hideCtx();
+  openDlg('Rename',b.title,v=>{b.title=v;localStorage.setItem('dw:bm',JSON.stringify(S.bm));renderBM();toast('Renamed')});
+});
+document.getElementById('ci-delete').addEventListener('click',()=>{
+  S.bm=S.bm.filter(x=>x.id!==S.ctxId);localStorage.setItem('dw:bm',JSON.stringify(S.bm));renderBM();hideCtx();toast('Deleted');
+});
+document.addEventListener('touchstart',e=>{if(!document.getElementById('ctx').contains(e.target))hideCtx()},{passive:true});
+document.addEventListener('click',e=>{if(!document.getElementById('ctx').contains(e.target))hideCtx()});
+
+/* ══ DIALOG ═══════════════════════════════════ */
+function openDlg(title,val,cb){
+  document.getElementById('dt').textContent=title;
+  document.getElementById('di').value=val||'';S.dlgCb=cb;
+  document.getElementById('dlg-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('di').focus(),80);
+}
+function closeDlg(){document.getElementById('dlg-ov').classList.remove('open');S.dlgCb=null}
+function okDlg(){const v=document.getElementById('di').value.trim();if(v&&S.dlgCb)S.dlgCb(v);closeDlg()}
+document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')okDlg();if(e.key==='Escape')closeDlg()});
+
+/* ══ OVERLAYS + SWIPE DOWN ════════════════════ */
+function openOv(id){document.getElementById(id).classList.add('open')}
+function closeOv(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.panel').forEach(p=>{
+  let sy=0;
+  p.addEventListener('touchstart',e=>{sy=e.touches[0].clientY},{passive:true});
+  p.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>64&&p.scrollTop===0){const ov=p.closest('.overlay');if(ov)ov.classList.remove('open')}},{passive:true});
+});
+
+/* ══ TOAST ════════════════════════════════════ */
+let tt;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200)}
+
+/* ══ UTILS ════════════════════════════════════ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function safeHost(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch{return u}}
+function fav(url,size,shape){
+  if(!url)return`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--text-3)"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10z"/></svg>`;
+  try{
+    const h=new URL(url).origin;const r=shape==='large'?'14px':'8px';
+    return`<img src="https://www.google.com/s2/favicons?domain=${h}&sz=${size||32}" width="${size||32}" height="${size||32}" style="border-radius:${r}" onerror="this.style.display='none'">`;
+  }catch{return''}
+}
+
+init();
+</script>
+
+</body>
+</html>
